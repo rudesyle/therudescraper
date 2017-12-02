@@ -37,9 +37,23 @@ export default class LinksScreen extends React.Component {
    }
 
    deleteAd(data) {
-     console.log('Deleting an poop' + data.description);
-    //this.setState({searchText:''});
-    //api.deleteNote(rowData, this.noteId(rowData));
+     //console.log('Deleting an poop' + data.description);
+
+     let apiUrl = 'https://fast-bastion-78079.herokuapp.com/ad';
+     //let apiUrl = 'http://localhost:3000/ad';
+
+     fetch(apiUrl, {
+       method: "POST",
+       headers: {
+         Accept: "application/json",
+         "Content-Type": "application/json"
+       },
+       body: JSON.stringify({
+         "dateSet": data.dateTime,
+         "source": data.source,
+         "status": 1
+       })
+      });
   }
 
   renderRow(rowData) {
@@ -55,7 +69,7 @@ export default class LinksScreen extends React.Component {
       return (
         <Swipeout right={swipeoutBtns}>
           <View>
-          <Text>{ rowData.description}</Text>
+          <Text>{ rowData.description} ({ rowData.source })</Text>
           <Text>{ rowData.dateTime }</Text>
           </View>
         </Swipeout>
