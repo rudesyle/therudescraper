@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "the-rude-scraper",
+    "description": "No description",
+    "slug": "the-rude-scraper",
+    "privacy": "public",
+    "sdkVersion": "23.0.0",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "primaryColor": "#cccccc",
+    "icon": "./assets/images/scrape.png",
+    "splash": {
+      "image": "./assets/images/rude-splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.danielgray.therudescraper"
+    },
+    "android": {
+      "package": "com.danielgray.therudescraper"
+    }
+  }
+}
