@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, View, Text, ListView } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import Moment from 'moment';
 import Swipeout from 'react-native-swipeout';
+import { API_URL } from 'react-native-dotenv'
+var Environment = require('../environment.js')
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -11,6 +13,9 @@ export default class LinksScreen extends React.Component {
 
   constructor() {
     super();
+
+    //ApiClient.init('API_URL');
+
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     let data = "['row 1', 'row 2', 'row 999']";
 
@@ -21,15 +26,15 @@ export default class LinksScreen extends React.Component {
   }
 
   loadJSONData() {
-    let apiUrl = 'https://fast-bastion-78079.herokuapp.com/scrape';
-    //let apiUrl = 'http://localhost:3000/scrape';
 
-     fetch(apiUrl, {method: "GET"})
+    let apiUrl = 'http://localhost:3000/scrape';//API_URL + '/scrape';
+    console.log(process.env);
+    console.log('peeks');
+    fetch(apiUrl, {method: "GET"})
      .then((response) => response.json())
      .then((responseData) =>
      {
           var json = responseData;
-          console.log('response object:',responseData)
           this.setState({ dataSource: this.state.dataSource.cloneWithRows(json) });
      })
      .done(() => {
@@ -67,17 +72,18 @@ export default class LinksScreen extends React.Component {
     ]
     Moment.locale('en');
       return (
+
         <Swipeout right={swipeoutBtns}>
           <View>
-          <Text>{ rowData.description} ({ rowData.source })</Text>
-          <Text>{ rowData.dateTime }</Text>
+          <Text>{ API_URL }</Text>
+          <Text>{ rowData.Description} ({ rowData.Source })</Text>
+          <Text>{ rowData.DateSet }</Text>
           </View>
         </Swipeout>
       )
     }
 
   render() {
-
     return (
       <ScrollView style={styles.container}>
         <ListView
@@ -88,7 +94,6 @@ export default class LinksScreen extends React.Component {
     );
   }
 }
-
 
 
 const styles = StyleSheet.create({
