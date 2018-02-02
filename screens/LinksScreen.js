@@ -44,8 +44,8 @@ export default class LinksScreen extends React.Component {
    deleteAd(data) {
      //console.log('Deleting an poop' + data.description);
 
-     let apiUrl = 'https://fast-bastion-78079.herokuapp.com/ad';
-     //let apiUrl = 'http://localhost:3000/ad';
+     //let apiUrl = 'https://fast-bastion-78079.herokuapp.com/ad';
+     let apiUrl = 'http://localhost:3000/ad';
 
      fetch(apiUrl, {
        method: "POST",
@@ -54,11 +54,11 @@ export default class LinksScreen extends React.Component {
          "Content-Type": "application/json"
        },
        body: JSON.stringify({
-         "dateSet": data.dateTime,
-         "source": data.source,
-         "status": 1
+         "source": data.Source,
+         "description": data.Description
        })
       });
+      return;
   }
 
   renderRow(rowData) {
