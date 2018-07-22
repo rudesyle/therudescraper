@@ -1,8 +1,9 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, ListView } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, ListView, FlatList, TouchableHighlight } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import Moment from 'moment';
 import Swipeout from 'react-native-swipeout';
+import {SwipeableFlatList} from 'react-native-swipeable-flat-list';
 import { API_URL } from 'react-native-dotenv'
 var Environment = require('../environment.js')
 
@@ -16,36 +17,36 @@ export default class LinksScreen extends React.Component {
 
     //ApiClient.init('API_URL');
 
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    //const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
     let data = "['row 1', 'row 2', 'row 999']";
 
     this.state = {
-      dataSource: ds.cloneWithRows(['row 1', 'row 2', 'row 999']),
+      dataSource: {} //ds.cloneWithRows(data)
     };
     this.loadJSONData();
   }
 
   loadJSONData() {
 
-    let apiUrl = 'http://localhost:3000/scrape';//API_URL + '/scrape';
+    let apiUrl = API_URL + '/scrape';
+    //this.state.dataSource.cloneWithRows({}) ;
+
     console.log(process.env);
-    console.log('peeks');
+    console.log(API_URL);
     fetch(apiUrl, {method: "GET"})
      .then((response) => response.json())
      .then((responseData) =>
      {
           var json = responseData;
-          this.setState({ dataSource: this.state.dataSource.cloneWithRows(json) });
+          this.setState({ dataSource: json });
      })
      .done(() => {
      });
    }
 
    deleteAd(data) {
-     //console.log('Deleting an poop' + data.description);
-
-     //let apiUrl = 'https://fast-bastion-78079.herokuapp.com/ad';
-     let apiUrl = 'http://localhost:3000/ad';
+     let apiUrl = API_URL + '/ad';
 
      fetch(apiUrl, {
        method: "POST",
@@ -58,7 +59,20 @@ export default class LinksScreen extends React.Component {
          "description": data.Description
        })
       });
-      return;
+
+      this.loadJSONData();
+      /*
+      // removing the first element in the array
+      //items.splice(0, 1);
+
+      // create a new DataSource object
+      var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => { r1 !== r2 }});
+
+      // update the DataSource in the component state
+      this.setState({
+          dataSource : ds.cloneWithRows(items),
+      });
+      */
   }
 
   renderRow(rowData) {
@@ -72,10 +86,8 @@ export default class LinksScreen extends React.Component {
     ]
     Moment.locale('en');
       return (
-
-        <Swipeout right={swipeoutBtns}>
+        <Swipeout right={swipeoutBtns} autoClose>
           <View>
-          <Text>{ API_URL }</Text>
           <Text>{ rowData.Description} ({ rowData.Source })</Text>
           <Text>{ rowData.DateSet }</Text>
           </View>
@@ -86,9 +98,16 @@ export default class LinksScreen extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container}>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={ this.renderRow.bind(this) }
+        <SwipeableFlatList
+            data={this.state.dataSource}
+            renderItem={({ item }) => (
+                <View style={{ height: 48 }}><Text>{ item.Description} ({ item.Source })</Text><Text>{ item.DateSet }</Text></View>
+            )}
+            renderRight={({ item }) => (
+                <Text style={{ width:80,height:40,backgroundColor:'red',fontWeight: 'bold',textAlign: 'center', color: 'white'   }}
+                  onPress={() => this.deleteAd(item)}>DELETE</Text>
+            )}
+            backgroundColor={'white'}
         />
       </ScrollView>
     );
@@ -101,6 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 15,
     backgroundColor: '#fff',
+    height:25
   },
   rowStyle : {
     backgroundColor : '#fff'
