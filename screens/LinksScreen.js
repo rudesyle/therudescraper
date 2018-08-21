@@ -1,78 +1,30 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, ListView, FlatList, TouchableHighlight } from 'react-native';
+import { observer } from 'mobx-react/native';
+import { ScrollView, StyleSheet, View, Text, ListView, FlatList, TouchableHighlight,Observer } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import Moment from 'moment';
 import Swipeout from 'react-native-swipeout';
 import {SwipeableFlatList} from 'react-native-swipeable-flat-list';
 import { API_URL } from 'react-native-dotenv'
-var Environment = require('../environment.js')
+import ScraperStore from '../ScraperStore'
+import { trace } from "mobx"
 
-export default class LinksScreen extends React.Component {
+@observer export default class LinksScreen extends React.Component {
   static navigationOptions = {
     title: 'Links',
   };
 
   constructor() {
     super();
-
-    //ApiClient.init('API_URL');
-
-    //const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-
-    let data = "['row 1', 'row 2', 'row 999']";
-
-    this.state = {
-      dataSource: {} //ds.cloneWithRows(data)
-    };
     this.loadJSONData();
   }
 
   loadJSONData() {
-
-    let apiUrl = API_URL + '/scrape';
-    //this.state.dataSource.cloneWithRows({}) ;
-
-    console.log(process.env);
-    console.log(API_URL);
-    fetch(apiUrl, {method: "GET"})
-     .then((response) => response.json())
-     .then((responseData) =>
-     {
-          var json = responseData;
-          this.setState({ dataSource: json });
-     })
-     .done(() => {
-     });
+    ScraperStore.fetchProjects();
    }
 
    deleteAd(data) {
-     let apiUrl = API_URL + '/ad';
-
-     fetch(apiUrl, {
-       method: "POST",
-       headers: {
-         Accept: "application/json",
-         "Content-Type": "application/json"
-       },
-       body: JSON.stringify({
-         "source": data.Source,
-         "description": data.Description
-       })
-      });
-
-      this.loadJSONData();
-      /*
-      // removing the first element in the array
-      //items.splice(0, 1);
-
-      // create a new DataSource object
-      var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => { r1 !== r2 }});
-
-      // update the DataSource in the component state
-      this.setState({
-          dataSource : ds.cloneWithRows(items),
-      });
-      */
+     ScraperStore.deleteAd(data);
   }
 
   renderRow(rowData) {
@@ -98,8 +50,9 @@ export default class LinksScreen extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container}>
+        <Text onPress={() => ScraperStore.fetchProjects()}>REFRESH : {ScraperStore.state}</Text>
         <SwipeableFlatList
-            data={this.state.dataSource}
+            data={ScraperStore.ads}
             renderItem={({ item }) => (
                 <View style={{ height: 48 }}><Text>{ item.Description} ({ item.Source })</Text><Text>{ item.DateSet }</Text></View>
             )}
